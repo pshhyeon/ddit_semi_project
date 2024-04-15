@@ -67,5 +67,6 @@
 
 ### 일정확인 Notion
 
-![image](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/f51e812b-5992-45d7-bbbc-dc5052c96429)
+![image](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/c37a1b34-d56e-4c8c-a94c-df5d65c94bbc)
+
 
