@@ -2,7 +2,7 @@
 
 
 <!--프로젝트 대문 이미지-->
-![Project Title](img/project-title.png)
+![main_logo](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/b6a30a0a-730e-4a30-8c58-d6d57b9857ed)
 
 <!--프로젝트 버튼-->
  [![Readme in English][readme-eng-shield]][readme-eng-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
