@@ -1,6 +1,3 @@
-# 사계
-
-
 <!--프로젝트 대문 이미지-->
 ![git_main_logo](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/e9d21175-6be5-4fcc-951a-3a52a58bcb3a)
 ![image](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/139b6b6e-d1b6-4fc9-b581-9972456cb13b)
