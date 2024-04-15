@@ -42,7 +42,8 @@
 
 <br>
 
-// 소모임 상세 gif 추가
+![party_detail_page_gif](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/be347fc9-45cf-4b6d-ab9e-148ca0058f14)
+
 
 <br>
 
