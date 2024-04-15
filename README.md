@@ -52,7 +52,7 @@
 
 
 # [3] 팀원 소개
-- 박상현 - PL > 
+- 박상현 - PL > <a href="https://github.com/pshhyeon">sanghyeon's github</a>
 - 김진원 - TA > 
 - 박정현 - AA > 
 - 장성훈 - DA > 
