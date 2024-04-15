@@ -2,7 +2,7 @@
 
 
 <!--프로젝트 대문 이미지-->
-![main_logo](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/b6a30a0a-730e-4a30-8c58-d6d57b9857ed)
+![origin_main_logo](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/beec79eb-b94a-4319-acbe-a10b7fe79d26)
 
 <!--프로젝트 버튼-->
  [![Readme in English][readme-eng-shield]][readme-eng-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
