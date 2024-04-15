@@ -37,15 +37,10 @@
 ![image](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/e4eb7424-853b-4cff-a93c-1689a20dae25)
 
 
-# [2] 사용예예
-***스크린샷, 코드** 등을 통해 **사용 방법**과 **사용 예제**를 보여주세요. 사용 예제별로 h2 헤더로 나누어 설명할 수 있습니다.*
-
-![usage](img/usage.png)
-
-```java
-// 몇 개의 API 사용 예제를 코드와 함께 보여주세요.
-```
-
+# [2] 사용 예
+![sagye_festival-ezgif com-video-to-gif-converter](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/82432795-a257-4841-b6e4-a675e101241b)
+// 소모임 상세 gif 추가
+![sagye_board_gif](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/9dea453d-9d0d-4cba-8712-eb89d81ea4e2)
 
 
 # [3] 팀원 소개
