@@ -32,7 +32,7 @@
     <!-- 모달 스타일 -->
     <link rel="stylesheet" href="./css/partyMainStyles.css" />
     <!-- 카카오 맵 -->
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=dde7b3ab140fbaa2cba75ccfb885e2da"></script>
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=[insert_your_key]"></script>
     <!-- 스크립트 -->
     <script src="./js/script.js" defer></script>
     <!-- 날씨 스크립트 -->
