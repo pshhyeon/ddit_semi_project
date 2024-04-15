@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comment">
+
+<select id="commentList" parameterType="int" resultType="commentVO">
+select COMMENTS_NO, COMMENTS_CON, COMMENTS_DATE, BOARD_NO, USER_NO
+from comments where board_no = #{data}
+</select>
+	
+	
+<select id="listNicknameInfo" parameterType="int" resultType="commentVO">
+
+        SELECT ROWNUM AS COMMENT_NO, U.USER_NICKNAME as NICKNAME, U.USER_NO
+          FROM COMMENTS C, USERS U
+         WHERE C.USER_NO = U.USER_NO 
+           AND C.BOARD_NO = #{data}
+
+</select> 	
+
+<insert id="insertComment" parameterType="CommentVO">
+	INSERT INTO COMMENTS(COMMENTS_NO, COMMENTS_CON, COMMENTS_DATE, BOARD_NO, USER_NO)
+                 VALUES ((SELECT NVL(MAX(COMMENTS_NO),0)+1 FROM COMMENTS), #{comments_con}, SYSDATE, #{board_no}, #{user_no})
+</insert>
+
+<delete id="deleteComment" parameterType="int">
+	delete from comments where comments_no = #{data}
+</delete>
+
+<update id="updateComment" parameterType="CommentVO">
+	update comments
+	   set comments_con = #{comments_con}
+	 where comments_no = #{comments_no}
+</update>
+	
+	
+</mapper>
+

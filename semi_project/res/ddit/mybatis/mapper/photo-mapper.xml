@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="photo">
+
+<insert id="photoInsert" parameterType="photoVO">
+	insert into photo(photo_no,photo_title,photo_content,photo_date,photo_count,photo_filename,party_no,user_no)
+	 		values((SELECT NVL(MAX(PHOTO_NO),0)+1 FROM PHOTO), #{photo_title},#{photo_content},sysdate,0,#{photo_filename},#{party_no},#{user_no})
+</insert>
+
+<select id ="photoList" parameterType="int" resultType="photoVO">
+	select photo_no, photo_title, photo_content, photo_date, photo_count, photo_filename, party_no, user_no
+	  from photo
+	 where party_no = #{data} 
+
+</select>
+
+<select id="getPhotoInfo" resultType="photoVO" parameterType="string">
+	select * from photo
+	 where photo_filename = #{data}
+</select>
+
+<select id="photoDetail" resultType="photoVO" parameterType="int">
+	SELECT PHOTO_NO, PHOTO_TITLE, PHOTO_CONTENT, PHOTO_DATE, PHOTO_COUNT,  (SELECT U.USER_NICKNAME 
+																			  FROM USERS U, PHOTO P 
+																			 WHERE U.USER_NO = P.USER_NO
+																			   AND P.PHOTO_NO = #{data}) AS nickname ,
+    PHOTO_FILENAME, PARTY_NO, USER_NO
+FROM photo
+WHERE photo_no = #{data}
+
+</select>
+
+<select id="findPartyAdmin" resultType="int" parameterType="int">
+	select user_no
+	  from party
+	 where party_no = #{data}
+
+</select>
+
+<delete id="photoDelete" parameterType="int">
+	delete from photo
+	 where photo_no = #{data}
+
+</delete>
+
+
+<update id="photoUpdate" parameterType="photoVO">
+	UPDATE PHOTO
+	   SET PHOTO_TITLE = #{photo_title},
+	   	   PHOTO_CONTENT = #{photo_content}
+	 WHERE PHOTO_NO  = #{photo_no}
+</update>
+
+<update id="photoCountUpdate" parameterType="int">
+	 update photo
+        set photo_count = photo_count+1
+      where photo_no = #{data}  
+
+</update>
+	
+</mapper>
+

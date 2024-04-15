@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="festival">
+	<select id="getAllFestival" resultType="fesVO">
+		select * from festival WHERE FESTIVAL_DELYN = 'N' ORDER BY FESTIVAL_NO ASC
+	</select>
+	
+	<select id="getAllParty" resultType="partyVO">
+		select * from party ORDER BY PARTY_NO ASC
+	</select>
+	
+	<select id="searchFestivalName" resultType="fesVO" parameterType="String">
+		select * from festival where festival_name like '%' || #{param} || '%' ORDER BY FESTIVAL_NO ASC
+	</select>
+	
+	<select id="detailFestival" resultType="fesVO" parameterType="int">
+		select * from festival where festival_no = #{param} ORDER BY FESTIVAL_NO ASC
+	</select>
+	
+	<select id="searchFestivalLocation" resultType="fesVO" parameterType="Map">
+		select * from festival where festival_name like '%' || #{title} || '%' and festival_addr like '%' || #{sido} || '%' and festival_addr like '%' || #{gugun} || '%' ORDER BY FESTIVAL_NO ASC
+	</select>
+	
+	<select id="partyFromFestivalNo" resultType="partyVO" parameterType="int">
+		select * from party where FESTIVAL_NO = #{param} ORDER BY FESTIVAL_NO ASC
+	</select>
+	
+	<select id="countFestival" resultType="int">
+		select count(*) from festival 
+	</select>
+
+	<insert id="addFestival" parameterType="fesVO">
+		insert into festival(
+		FESTIVAL_NO,
+		FESTIVAL_NAME,
+		FESTIVAL_ADDR,
+		FESTIVAL_TEL,
+		FESTIVAL_SITE,
+		FESTIVAL_DELYN,
+		FESTIVAL_LOCATION,
+		FESTIVAL_START,
+		FESTIVAL_FINISH,
+		FESTIVAL_CONTENT,
+		FESTIVAL_INST,
+		FESTIVAL_STREET_NAME,
+		FESTIVAL_STREET_NUMBER,
+		LATITUDE,
+		HARDNESS,
+		SIDO_NO
+		)
+		values(
+		FESTIVAL_SEQ.nextval
+		, #{festival_name}
+		, #{festival_addr}
+		, #{festival_tel}
+		, #{festival_site}
+		, 'N'
+		, #{festival_location}
+		, TO_DATE(#{festival_start}, 'YYYY-MM-DD')
+		, TO_DATE(#{festival_finish}, 'YYYY-MM-DD')
+		, #{festival_content}
+		, #{festival_inst}
+		, #{festival_street_name}
+		, #{festival_street_number}
+		, #{latitude}
+		, #{hardness}
+		, #{sido_no}
+		)
+	</insert>
+	
+	<update id="updateFestival" parameterType="fesVO">
+		update festival
+		SET FESTIVAL_NAME = #{festival_name}
+		, FESTIVAL_ADDR = #{festival_addr}
+		, FESTIVAL_TEL = #{festival_tel}
+		, FESTIVAL_SITE = #{festival_site}
+		, FESTIVAL_LOCATION = #{festival_location}
+		, FESTIVAL_START = TO_DATE(#{festival_start}, 'YYYY-MM-DD')
+		, FESTIVAL_FINISH = TO_DATE(#{festival_finish}, 'YYYY-MM-DD')
+		, FESTIVAL_CONTENT = #{festival_content}
+		, FESTIVAL_INST = #{festival_inst}
+		, FESTIVAL_STREET_NAME = #{festival_street_name}
+		, FESTIVAL_STREET_NUMBER = #{festival_street_number}
+		, LATITUDE = #{latitude}
+		, HARDNESS = #{hardness}   
+		, SIDO_NO = #{sido_no}
+		   where FESTIVAL_NO = #{festival_no}
+	</update>
+	
+	<update id="deleteFestival" parameterType="int">
+		update festival set FESTIVAL_DELYN = 'Y' where festival_no = #{param}
+	</update>
+	
+</mapper>
+

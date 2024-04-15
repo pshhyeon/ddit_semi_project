@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+	<select id="loginUser" parameterType="userVO" resultType="userVO">
+		select * from users where USER_ID = #{user_id} and USER_PASS = #{user_pass}
+	</select>
+	
+	<insert id="registerUser" parameterType="userVO">
+		insert into users (user_no, user_id, user_pass, user_hp, user_mail, user_nickname, user_name, user_bir, user_addr)
+		values (USER_SEQ.nextval, #{user_id}, #{user_pass}, #{user_hp}, #{user_mail}, #{user_nickname}, #{user_name}, #{user_bir}, #{user_addr})
+	</insert>
+	
+	
+	<select id="findUserPass" parameterType="userVO" resultType="String">
+		select user_pass from users where user_id=#{user_id} and user_mail=#{user_mail}
+	</select>
+	
+	<select id="chkIdDuplication" parameterType="String" resultType="int">
+		select count(*) from users where user_id = #{data}
+	</select>
+	
+	<select id="chkNicknameDuplication" parameterType="String" resultType="int">
+		select count(*) from users where USER_NICKNAME = #{data}
+	</select>
+	
+	<select id="findUserId" parameterType="userVO" resultType="userVO" >
+        select * from users where user_name = #{user_name} and user_mail= #{user_mail}
+    </select>
+    
+    <select id="chkIdMail" parameterType="userVO" resultType="int">
+    	select count(*) from users where user_id = #{user_id} and user_mail = #{user_mail}
+    </select>
+    
+    <select id="getBookmarkStatus" parameterType="markVO" resultType="markVO">
+    	select * from mark where user_no = #{user_no} and party_no = #{party_no}
+    </select>
+    
+    <insert id="insertBookmark" parameterType="markVO">
+    	insert into mark (mark_no, user_no, party_no) values ((select max(mark_no) + 1 from mark), #{user_no}, #{party_no})
+    </insert>
+    
+    <delete id="delBookmark" parameterType="markVO">
+    	delete from mark where user_no = #{user_no} and party_no = #{party_no}
+    </delete>
+	
+	<update id="modifyUser" parameterType="userVO">
+		update users
+		SET USER_PASS = #{user_pass}
+		, USER_HP = #{user_hp}
+		, USER_MAIL = #{user_mail}
+		, USER_NICKNAME = #{user_nickname}
+		, USER_NAME = #{user_name}
+		, USER_BIR = TO_DATE(#{user_bir}, 'YYYY-MM-DD')
+		, USER_IN = #{user_in}
+		, USER_ADDR = #{user_addr}
+		, USER_PROFILE_NAME = #{user_profile_name}
+		   where USER_ID = #{user_id}
+	</update>
+	
+	<select id="selectUser" parameterType="userVO" resultType="userVO">
+		select * from users where USER_ID = #{user_id}
+	</select>
+	
+	<select id="selectPartyUser" resultType="party_userVO">
+		select * from party_user ORDER BY ROWNUM
+	</select>
+	
+	<select id="countPartyUserFromPartyNo" resultType="int">
+		select count(*) as cnt from party_user group by party_no order by PARTY_NO
+	</select>
+	
+	<select id="selectAllUser" resultType="UserVO">
+		select * from users order by user_no
+	</select>
+	
+	<select id="selectAllUserReport" resultType="UserReportVO">
+		select * from user_report
+	</select>
+	
+	<select id="selectUserInfo" parameterType="int" resultType="UserVO">
+		select 
+		user_no, user_id, user_pass, user_hp, user_mail, user_delyn, user_nickname, user_name, 
+		to_char(user_bir, 'yyyy-MM-dd') user_bir, user_in, user_admin_chk, user_profile_name, user_addr from users where user_no = #{user_no}
+	</select>
+	
+	<insert id="insertUserReport" parameterType="map">
+		insert into USER_REPORT (USER_REPORT_NO, USER_REPORT_CONTENT, USER_NO, CHECK_YN)
+		values ((select max(USER_REPORT_NO) + 1 from USER_REPORT), #{user_report_content}, #{user_no}, 'N')
+	</insert>
+	
+	<update id="blindUser" parameterType="int">
+		update users
+		SET USER_DELYN = 'Y'
+		   where USER_NO = #{param}
+	</update>
+	
+	<update id="reportUser" parameterType="int">
+		update USER_REPORT
+		SET CHECK_YN = 'Y'
+		   where USER_REPORT_NO = #{param}
+	</update>
+	
+	<update id="resignUser" parameterType="int">
+		update users set user_delyn = 'Y' where user_no = #{param}
+	</update>
+	
+	<update id="resignPartyUserUpdate" parameterType="int">
+		update party_user set party_user_delyn = 3
+		where party_user_delyn = 2
+		and user_no = #{param}
+	</update>
+	
+	<delete id="resignPartyUserDelete" parameterType="int"> 
+		delete from party_user where user_no = #{param} AND party_user_delyn = 1
+	</delete>
+
+	<delete id="rejectPartyUser" parameterType="map">
+		delete from party_user where user_no = #{user_no} and party_no = #{party_no}
+	</delete>	
+	
+	<update id="acceptPartyUser" parameterType="map">
+		update party_user set PARTY_USER_DELYN = 2 where user_no = #{user_no} and party_no = #{party_no} 
+	</update>
+	
+	<update id="forcePartyUser" parameterType="map">
+		update party_user set PARTY_USER_DELYN = 4 where user_no = #{user_no} and party_no = #{party_no}
+	</update>
+	
+	<update id="exitParty" parameterType="map">
+		update party_user set Party_User_Delyn = 3 where user_no = #{user_no} and party_no = #{party_no}
+	</update>
+	
+	<delete id="UserReportCompanion" parameterType="int">
+		delete from user_report where user_report_no = #{param}
+	</delete>
+	
+	<update id="autoChangePartyStatus" parameterType="int">
+		update party set party_delyn = 'Y' 
+		where party_no = #{party_no} and 
+		(select count(*) from party_user where party_no = #{party_no} and party_user_delyn = 2) > (select TO_NUMBER(PARTY_PERCOUNT) from party where party_no = #{party_no})
+	</update>
+	
+</mapper>
+

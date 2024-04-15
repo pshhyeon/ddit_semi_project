@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+<!-- 동적쿼리 -->
+<sql id="dynamicCondition">
+	<where>
+		<if test = "!(category=='' or search=='')">
+			${category} like '%'||#{search}||'%'
+		</if>
+	</where>
+</sql>
+
+<!-- 전체 글 갯수 구하기 -->
+<select id="getBoardTotal" parameterType="map" resultType="int">
+	select count(*) from board
+	<include refid="dynamicCondition"></include>
+</select>
+
+<!-- 게시판리스트출력 -->
+<select id="boardList" parameterType="map" resultType="BoardVO">
+	select A.RNUM,A.board_no, A.BOARD_TITLE, A.BOARD_CONTENT, A.BOARD_DATE, A.BOARD_COUNT, (SELECT USER_NICKNAME FROM USERS WHERE USER_NO = A.USER_NO) AS NICKNAME, A.BOARD_FILE_NAME FROM
+		(SELECT ROWNUM AS RNUM, B.* FROM
+			(SELECT * FROM BOARD
+	<include refid="dynamicCondition"></include>	
+			ORDER BY BOARD_NO DESC) B
+	<![CDATA[		
+		WHERE ROWNUM <=#{end} ) A
+	WHERE A.RNUM >= #{start}
+	]]>		
+</select>
+
+
+<select id="boardDetail" parameterType="int" resultType="BoardVO">
+	    	select board_no, board_title, board_content, board_date, board_count, 
+	    		(select u.user_nickname
+                  from board b, users u
+                 where  b.user_no = u.user_no
+                  and  b.board_no = #{data}) NICKNAME,user_no, board_file_name
+	      from board  
+         where board_no = #{data} 
+</select>
+
+<insert id="boardInsert" parameterType="BoardVO">
+	insert into board(board_no,board_title,board_content,board_date,board_count,user_no,board_file_name)
+	 			values((SELECT NVL(MAX(BOARD_NO),0)+1 FROM BOARD),#{board_title},#{board_content},sysdate,1,#{user_no},#{board_file_name})
+	
+</insert>
+
+<update id="boardUpdate" parameterType="BoardVO">
+	UPDATE BOARD
+	   SET BOARD_TITLE = #{board_title},
+	       BOARD_CONTENT = #{board_content}
+	 WHERE BOARD_NO = #{board_no}      
+</update>
+
+<delete id="boardDelete" parameterType="int">
+	delete from board where board_no = #{data}
+
+</delete>
+
+<delete id="commentDeleteWithBoard" parameterType="int">
+	delete from comments where board_no = #{data}
+
+</delete>
+
+<update id="boardCountUpdate" parameterType="int">
+	 update board
+        set board_count = board_count+1
+      where board_no = #{data}  
+</update>
+	
+	
+	
+</mapper>
+

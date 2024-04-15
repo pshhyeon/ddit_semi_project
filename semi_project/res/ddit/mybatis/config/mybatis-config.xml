@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 이 문서는 myBatis의 환경 설정을 처리하는 문서입니다. -->
+<configuration>
+	<!-- BD연결용 properties파일 정보 설정 -->
+	<properties resource="ddit/mybatis/config/dbinfo.properties"></properties>
+	
+	<!-- 기본 설정값 지정하기 -->
+	<settings>
+		<!-- 데이터가 null로 전달이 되었으면 빈 칸이 아닌 null로 인식해라 -->
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+	<!-- myBatis에서 사용할 클래스들의 이름은 패키지명을 포함한 전체 이름을 사용해야 하는데
+		  이 때 전체 이름의 길이가 길어서 사용하기 불편할 수 있는데 이런 경우 전체 이름을 대신해서 사용할 별칭을 설정하여 사용할 수 있다 
+		  형식) <typeAlias type="패키지명을 포함한 클래스의 전체이름" alias="별칭"/> -->
+	<typeAliases>
+		<typeAlias type="ddit.vo.UserVO" alias="userVO"/>
+		<typeAlias type="ddit.vo.NotificeVO" alias="notiVO"/> 
+		<typeAlias type="ddit.vo.FestivalVO" alias="fesVO"/> 
+		<typeAlias type="ddit.vo.BoardVO" alias="BoardVO"/> 
+		<typeAlias type="ddit.vo.PartyVO" alias="partyVO"/> 
+		<typeAlias type="ddit.vo.RequestVO" alias="requestVO"/> 
+		<typeAlias type="ddit.vo.ReplyVO" alias="replyVO"/> 
+		<typeAlias type="ddit.vo.Party_userVO" alias="party_userVO"/> 
+		<typeAlias type="ddit.vo.CommentVO" alias="commentVO"/> 
+		<typeAlias type="ddit.vo.MarkVO" alias="markVO"/> 
+		<typeAlias type="ddit.vo.HashtagVO" alias="hashtagVO"/> 
+		<typeAlias type="ddit.vo.PartyGongjiVO" alias="partyGongjiVO"/> 
+		<typeAlias type="ddit.vo.ZzimVO" alias="ZzimVO"/> 
+		<typeAlias type="ddit.vo.PhotoVO" alias="photoVO"/> 
+		<typeAlias type="ddit.vo.UserReportVO" alias="UserReportVO"/> 
+		<typeAlias type="ddit.vo.PartyReportVO" alias="PartyReportVO"/> 
+	</typeAliases>
+	
+	
+	<!-- DB연결 설정하기 -->
+	<environments default="oracleDev">
+		<!-- environment하나당 DB연결 하나 -->
+		<environment id="oracleDev">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}"/>
+				<property name="url" value="${url}"/>
+				<property name="username" value="${user}"/>
+				<property name="password" value="${pass}"/>
+				<property name="poolMaximumActiveConnections" value="2"/><!-- 활성화된 최대 커넥션 수 -->
+				<property name="poolMaximumIdleConnections" value="2"/><!-- 유휴상태에서 최대 커넥션 수 -->
+			</dataSource>
+		</environment>
+	</environments>
+	
+	
+	<!-- DB에 사용되는 SQL문들이 작성된 mapper파일을 등록하는 부분 
+		  형식) <mappper resource="경로명/mapper파일명.xml"/> -->
+	<mappers>
+ 		<mapper resource="ddit/mybatis/mapper/user-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/notifice-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/festival-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/board-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/party-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/request-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/comment-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/mark-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/party-gongji-mapper.xml"/>
+ 		<mapper resource="ddit/mybatis/mapper/photo-mapper.xml"/>
+	</mappers>
+</configuration>

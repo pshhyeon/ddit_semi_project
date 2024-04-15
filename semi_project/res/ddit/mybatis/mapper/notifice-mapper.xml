@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noti">
+
+<sql id="dynamicCondition">
+	<where>
+		<if test = "!(category=='' or search=='')">
+			${category} like '%'||#{search}||'%'
+		</if>
+	</where>
+</sql>
+
+<!-- 전체글 수 -->
+<select id="getNotiTotal" parameterType="map" resultType="int">
+	select count(*) from notifice
+	<include refid="dynamicCondition"></include>
+</select>
+
+<!-- 게시글 목록 -->
+<select id="getAllBoard" parameterType="map" resultType="notiVO">
+  select A.NOTIFICE_NO, A.NOTIFICE_TITLE, TO_CHAR(A.NOTIFICE_DATE,'YYYY-MM-DD') NOTIFICE_DATE, A.NOTIFICE_COUNT FROM
+		(SELECT ROWNUM AS RNUM, B.* FROM
+			(SELECT * FROM NOTIFICE
+	<include refid="dynamicCondition"></include>	
+			ORDER BY NOTIFICE_NO DESC) B
+	<![CDATA[		
+		WHERE ROWNUM <=#{end} ) A
+	WHERE A.RNUM >= #{start}
+	]]>
+</select>
+
+<!-- 글쓰기 -->
+<insert id="InsertNoti" parameterType="notiVO">
+  INSERT INTO NOTIFICE(NOTIFICE_NO, NOTIFICE_TITLE, NOTIFICE_CONTENT, NOTIFICE_DATE, NOTIFICE_COUNT)
+		VALUES((SELECT NVL(MAX(NOTIFICE_NO)+1,1)FROM NOTIFICE),#{notifice_title},#{notifice_content}, sysdate, 0)
+</insert>
+
+<!-- 상세 보기 -->
+<select id="notiDetail" parameterType="int" resultType="notiVO">
+  select *from notifice
+    where NOTIFICE_NO =#{data}
+</select>
+
+<!-- 삭제 -->
+<delete id="deleteNoti" parameterType="int">
+  delete from NOTIFICE where NOTIFICE_NO = #{data}
+</delete>
+
+<!-- 수정 -->
+<update id="updateNoti" parameterType="notiVO">
+	UPDATE NOTIFICE
+	   SET NOTIFICE_TITLE = #{notifice_title},
+	       NOTIFICE_CONTENT = #{notifice_content}
+	 WHERE NOTIFICE_NO = #{notifice_no}      
+</update>
+
+<!-- 조회수 증가 -->
+<update id="getNotiHit" parameterType="int">
+	 UPDATE NOTIFICE
+	SET NOTIFICE_COUNT = NOTIFICE_COUNT + 1
+	WHERE NOTIFICE_NO = #{notifice_no}
+</update>
+</mapper>
+

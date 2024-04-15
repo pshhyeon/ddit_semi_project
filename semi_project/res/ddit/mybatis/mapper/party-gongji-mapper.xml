@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="party-gongji">
+
+<sql id="dynamicCondition">
+		<if test = "!(category=='' or search=='')">
+		and ${category} like '%'||#{search}||'%'
+		</if>
+</sql>
+<!-- //공지리스트 -->
+<select id="gongjiList" resultType="partyGongjiVO" parameterType="map">
+SELECT A.RNUM,A.PARTY_GONGJI_NO, A.party_gongji_title, A.PARTY_GONGJI_CONTENT, A.party_gongji_date, A.party_no 
+ FROM
+		(SELECT ROWNUM AS RNUM, B.* FROM
+			(SELECT * FROM PARTY_GONGJI
+			WHERE PARTY_NO =  #{party_no}
+<include refid="dynamicCondition"></include>
+			ORDER BY PARTY_GONGJI_NO DESC) B
+<![CDATA[
+		WHERE ROWNUM <=#{end} ) A
+	WHERE A.RNUM >= #{start}
+    ]]>	
+</select>
+
+<select id="getGongjiTotal" parameterType="map" resultType="int">
+	select count(*) from  PARTY_GONGJI
+</select>
+
+<delete id="gongjiDelete" parameterType="int">
+delete from PARTY_GONGJI 
+where PARTY_GONGJI_NO = #{party_gongji_no}
+
+</delete>
+
+<update id="gongjiUpdate" parameterType="partyGongjiVO">
+	UPDATE PARTY_GONGJI
+SET
+PARTY_GONGJI_TITLE = #{party_gongji_title} ,
+PARTY_GONGJI_CONTENT = #{party_gongji_content}
+WHERE PARTY_GONGJI_NO = #{party_gongji_no}
+</update>	
+
+<insert id="gongjiInsert" parameterType="partyGongjiVO">
+	insert into  PARTY_GONGJI (PARTY_GONGJI_NO, PARTY_GONGJI_TITLE, PARTY_GONGJI_CONTENT, PARTY_GONGJI_DATE, PARTY_NO)
+values ((SELECT NVL(MAX(PARTY_GONGJI_NO),0)+1 FROM PARTY_GONGJI),#{party_gongji_title} , #{party_gongji_content} ,sysdate , #{party_no})
+</insert>
+	
+</mapper>
+

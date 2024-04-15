@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+/* #ed4c78 */
+
+.mt-3{
+    	text-align: center;
+}
+
+.modalBtn {
+    background-color: #ff1959;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.modalBtn:hover {
+    background-color: #fd789d;
+}
+
+.modal-content{
+	background: linear-gradient(0deg, #ffffff, #f1c2ce);
+}
+
+.modal-footer,
+.modal-body,
+.modal-header{
+	border: none;
+}
+
+.page-link{
+	border: none;
+	color: #ed4c78;
+}
+
+/* .active 클래스 요소의 하위 요소 .page-link 클래스 스타일 */
+.active>.page-link{
+	border: none;
+	background-color: #ed4c78;
+}
+
+.modalTable th,
+.modalTable td{
+	text-align: center;
+    background-color: rgba(0, 0, 0, 0); /* 배경색을 완전히 투명하게 설정 */
+    border-bottom: 1px solid #afafaf;
+    border-top: 1px solid #afafaf;
+}

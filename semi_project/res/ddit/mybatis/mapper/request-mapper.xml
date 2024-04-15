@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="request">
+
+<sql id="dynamicCondition">
+	<where>
+		<if test = "!(category=='' or search=='')">
+			${category} like '%'||#{search}||'%'
+		</if>
+	</where>
+</sql>
+<!-- 1대1문의 갯수 -->
+<select id="getRequestTotal" parameterType="map" resultType="int">
+	select count(*) from request
+	<include refid="dynamicCondition"></include>
+</select>
+<!-- 1대1문의 리스트 -->
+<select id="requestList" parameterType="map" resultType="requestVO">
+		
+		
+SELECT A.RNUM,A.REQUEST_NO, A.REQUEST_TITLE, A.REQUEST_CONTENT, A.REQUEST_DATE, (SELECT USER_NICKNAME FROM USERS WHERE USER_NO = A.USER_NO) AS NICKNAME , A.USER_NO, A.REQUEST_SECRET 
+ FROM
+		(SELECT ROWNUM AS RNUM, B.* FROM
+			(SELECT * FROM REQUEST
+	<include refid="dynamicCondition"></include>
+			ORDER BY REQUEST_NO DESC) B
+	<![CDATA[
+		WHERE ROWNUM <=#{end} ) A
+	WHERE A.RNUM >= #{start}
+		]]>	
+</select>
+<!--  1대1문의 삽입-->
+<insert id="requestInsert" parameterType="map">
+insert into request
+values ((SELECT NVL(MAX(REQUEST_NO),0)+1 FROM request) ,
+ #{request_title} ,#{request_content} ,sysdate,'N' ,#{user_no} , 'N')
+
+</insert>
+<!--  1대1문의 비밀글 삽입-->
+<insert id="secretInsert" parameterType="map">
+insert into request
+values ((SELECT NVL(MAX(request_no),0)+1 FROM request) ,
+ #{request_title} ,#{request_content} ,sysdate,'N' ,#{user_no} , 'Y')
+
+</insert>
+<!-- 1대1문의 상세 -->
+<select id="requestDetail" parameterType="int" resultType="requestVO">
+	select request_no 
+      ,request_title 
+      ,request_content 
+      ,request_date 
+      ,(select u.user_nickname
+        from request r , users u
+        where r.user_no = u.user_no
+        and r.request_no = #{request_no})  nickname,user_no
+from request
+where request_no = #{request_no}
+</select>
+<!-- 1대1문의 삭제 -->
+<delete id="requestDelete" parameterType="int">
+	delete from request where request_no = #{reqeust_no} or user_no = 27
+</delete>
+
+<select id="replyList" parameterType="int" resultType="replyVO">
+select request_no , reply_title , reply_content , reply_date , reply_delyn
+from reply 
+where request_no = #{request_no}
+</select> 
+
+<delete id="replyDelete" parameterType="int">
+	delete from reply 
+where request_no = #{request_no}
+</delete>
+
+<insert id="replyInsert" parameterType="replyVO">
+	INSERT INTO REPLY(REQUEST_NO, REPLY_TITLE, REPLY_CONTENT, REPLY_DATE, REPLY_DELYN)
+                 VALUES (#{request_no},#{reply_title},#{reply_content} ,SYSDATE, 'N')
+</insert>
+
+<update id="replyUpdate" parameterType="replyVO">
+UPDATE REPLY 
+SET
+REPLY_TITLE = #{reply_title},
+REPLY_CONTENT = #{reply_content}
+WHERE REQUEST_NO = #{request_no}
+</update>
+	
+	
+</mapper>
+

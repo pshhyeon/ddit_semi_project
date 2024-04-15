@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mark">
+
+<!-- 게시글 목록 -->
+<select id="getAllMark" parameterType="int" resultType="zzimVO">
+   SELECT P.party_no, P.party_name, f.festival_name, TO_CHAR(P.party_date,'YYYY-MM-DD') party_date
+     FROM PARTY P , MARK M, festival f
+    WHERE P.PARTY_NO = M.PARTY_NO
+     and p.festival_no = f.festival_no
+     AND M.USER_NO = #{data}
+</select>
+
+</mapper>

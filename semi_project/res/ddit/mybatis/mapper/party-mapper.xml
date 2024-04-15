@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 myBatis에서 처리할 SQL문을 작성하는 문서입니다 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="party">
+	
+	<!-- 동적쿼리 -->
+	<sql id="hashTagSearch">
+    	<if test="stype == 'hashtag' and !(sword == '')">
+	         and party_user.party_no IN (
+	            SELECT 
+	                party_hashtag.party_no
+	            FROM 
+	                hashtag
+	            INNER JOIN 
+	                party_hashtag ON hashtag.HASHTAG_NO = party_hashtag.HASHTAG_NO
+	            INNER JOIN 
+	                party ON party_hashtag.party_no = party.party_no
+	            WHERE 
+	                hashtag_name like '%'||#{sword}||'%'
+	        )
+    	</if>
+	</sql>
+
+	<sql id="titleSearch">
+		<if test="stype == 'title' and !(sword == '')">
+	       and party_name like '%'||#{sword}||'%'
+		</if>
+	</sql>
+
+	<select id="getPartyBoardList" parameterType="map" resultType="map">
+		SELECT A.* FROM
+		(
+			SELECT ROWNUM AS RNUM, B.* FROM
+			    (
+			    	
+			        SELECT 
+		                party_user.party_no as party_no, 
+		                party_name, 
+		                region_sido, 
+		                CASE 
+		                    WHEN party_delyn = 'N' THEN '모집중'
+		                    WHEN party_delyn = 'Y' THEN '모집마감'
+		                    ELSE '상태미정'
+		                END as party_status, 
+		                party_percount, 
+		                COUNT(party_user.user_no) as user_cnt
+		            FROM 
+		                party_user
+		            INNER JOIN 
+		                party ON party_user.party_no = party.party_no
+		            INNER JOIN 
+		                festival ON party.festival_no = festival.festival_no
+		            INNER JOIN 
+		                festival_sido ON festival.sido_no = festival_sido.sido_no
+		            where Party_User.Party_User_Delyn = 2
+		            <include refid="titleSearch"/>
+					<include refid="hashTagSearch"/>
+		            GROUP BY 
+		                party_user.party_no, 
+		                party_name, 
+		                region_sido, 
+		                party_delyn, 
+		                party_percount
+		            ORDER BY party_no DESC
+			    ) B
+		<![CDATA[ 
+			WHERE ROWNUM <= #{end} ) A
+		WHERE A.RNUM >= #{start}
+		]]>
+	</select>
+	
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(*) from
+		(
+		SELECT 
+		    party_user.party_no as party_no, 
+		    party_name, 
+		    region_sido, 
+		    CASE 
+		        WHEN party_delyn = 'N' THEN '모집중'
+		        WHEN party_delyn = 'Y' THEN '모집마감'
+		        ELSE '상태미정'
+		    END as party_status, 
+		    party_percount, 
+		    COUNT(party_user.user_no) as user_cnt
+		FROM 
+		    party_user
+		INNER JOIN 
+		    party ON party_user.party_no = party.party_no
+		INNER JOIN 
+		    festival ON party.festival_no = festival.festival_no
+		INNER JOIN 
+		    festival_sido ON festival.sido_no = festival_sido.sido_no
+		where Party_User.Party_User_Delyn = 2
+		<include refid="titleSearch"/>
+		<include refid="hashTagSearch"/>
+		GROUP BY 
+		    party_user.party_no, 
+		    party_name, 
+		    region_sido, 
+		    party_delyn, 
+		    party_percount
+		)
+	</select>
+	
+	<!-- 회원의 소모임 가입상태 가져오기 -->
+	<select id="getUserPartystatus" parameterType="map" resultType="int">
+		select PARTY_USER_DELYN from PARTY_USER
+		where user_no = #{user_no} and party_no = #{party_no}
+		union all
+		select 0 PARTY_USER_DELYN from dual
+		where not exists (
+		select PARTY_USER_DELYN from PARTY_USER
+		where user_no = #{user_no} and party_no = #{party_no}
+		)
+	</select>
+	
+	<!-- 소모임 관련정보 가져오기 -->
+	<!-- 
+	USER_NICKNAME, USER_NAME, 
+	USER_COUNT, PARTY_NO, PARTY_NAME, PARTY_PERCOUNT, PARTY_STATUS, PARTY_DATE, PARTY_INFO,HASHTAGS ,
+	FESTIVAL_NO, FESTIVAL_NAME
+	 -->
+	<select id="getPartydetail" parameterType="int" resultType="map">
+		SELECT
+		    u.user_nickname,
+		    u.user_name,
+		    COUNT(DISTINCT CASE WHEN pu.party_user_delyn = 2 THEN pu.user_no END) AS user_count,
+		    p.party_no,
+		    p.party_name,
+		    p.party_percount,
+		    CASE p.party_delyn
+		        WHEN 'N' THEN '모집중'
+		        WHEN 'Y' THEN '모집마감'
+		    END AS party_status,
+		    TO_CHAR(p.party_date, 'YYYY-MM-DD') party_date,
+		    NVL(p.party_info, '소개글이 없습니다.') AS party_info,
+		    f.festival_no,
+		    f.festival_name,
+		    h.hashtag_names AS hashtags
+		FROM
+		    party p
+		LEFT JOIN
+		    party_user pu ON p.party_no = pu.party_no
+		LEFT JOIN
+		    users u ON p.user_no = u.user_no
+		LEFT JOIN
+		    festival f ON p.festival_no = f.festival_no
+		LEFT JOIN
+		    (
+		        SELECT
+		            ph.party_no,
+		            LISTAGG(h.hashtag_name, ' || ') WITHIN GROUP (ORDER BY h.hashtag_name) AS hashtag_names
+		        FROM
+		            party_hashtag ph
+		        LEFT JOIN
+		            hashtag h ON ph.hashtag_no = h.hashtag_no
+		        GROUP BY
+		            ph.party_no
+		    ) h ON p.party_no = h.party_no
+		WHERE
+		    p.party_no = #{party_no}
+		GROUP BY
+		    u.user_nickname,
+		    u.user_name,
+		    p.party_no,
+		    p.party_name,
+		    p.party_percount,
+		    p.party_delyn,
+		    p.party_date,
+		    p.party_info,
+		    f.festival_no,
+		    f.festival_name,
+		    h.hashtag_names
+	</select>
+	
+	<!-- 유저상태 0 일때 가입 신청 -->
+	<insert id="insertJoinParty" parameterType="party_userVO">
+		insert into PARTY_USER (PARTY_NO, USER_NO, PARTY_USER_DELYN) values (#{party_no}, #{user_no}, 1)
+	</insert>
+	
+	<!-- 유저상태 1 일때 가입 취소 -->
+	<delete id="delJoinParty" parameterType="party_userVO">
+		DELETE FROM PARTY_USER WHERE party_no = #{party_no} and user_no = #{user_no}
+	</delete>
+	
+	<!-- 유저상태 3 일때 가입 신청 -->
+	<update id="updateJoinParty" parameterType="party_userVO">
+		UPDATE PARTY_USER SET PARTY_USER_DELYN = 1 WHERE party_no = #{party_no} and user_no = #{user_no}
+	</update>
+	
+	<select id="getHashtagList" resultType="hashtagVO">
+		select * from hashtag
+	</select>
+	
+	<insert id="insertParty" parameterType="partyVO">
+		insert into party (PARTY_NO, PARTY_NAME, PARTY_PERCOUNT, USER_NO, FESTIVAL_NO, PARTY_INFO)
+		values((select max(party_no)+1 from party), #{party_name}, #{party_percount}, #{user_no}, #{festival_no}, #{party_info})
+	</insert>
+	
+	<select id="getRegisterPartyNo" resultType="partyVO" parameterType="partyVO">
+		select * from party where USER_NO = #{user_no} and FESTIVAL_NO = #{festival_no}
+	</select>
+	
+	<!-- 모임 등록시 파티장 파티유저 테이블 등록 -->
+	<insert id="insertPartyUser" parameterType="party_userVO">
+		insert into PARTY_USER (PARTY_NO, USER_NO, PARTY_USER_DELYN)
+		values (#{party_no}, #{user_no}, 2)
+	</insert>
+	
+	<insert id="registerPartyHashtag" parameterType="map">
+		insert into PARTY_HASHTAG (PARTY_NO, HASHTAG_NO)
+		values(#{party_no}, #{hashtag_no})
+	</insert>
+	
+	<!-- 파티번호로 유저정보 가져오기 -->
+	<select id="getPartyUserList" parameterType="int" resultType="userVO">
+		select u.USER_NO USER_NO, USER_ID, USER_PASS, USER_HP, USER_MAIL, USER_DELYN, USER_NICKNAME, USER_NAME, USER_BIR, USER_IN, USER_ADMIN_CHK, USER_PROFILE_NAME, USER_ADDR
+		from USERS u
+		inner join party_user pu on u.user_no = pu.user_no
+		where PARTY_USER_DELYN = 2 and user_delyn = 'N' and party_no = #{party_no}
+	</select>
+	
+	<!-- 모임 신고 -->
+	<insert id="insertPartyReport" parameterType="map">
+		insert into PARTY_REPORT (PARTY_REPORT_NO, PARTY_REPORT_CONTENT, PARTY_NO, PARTY_CHECK_YN, USER_NO)
+		values ((select max(PARTY_REPORT_NO) + 1 from PARTY_REPORT), #{party_report_content}, #{party_no}, 'N', #{user_no})
+	</insert>
+	
+	<!-- 모임상태 변경 -->
+	<update id="updatePartyStatus" parameterType="map">
+		update party set PARTY_DELYN = #{party_delyn} where party_no = #{party_no}
+	</update>
+	
+	<!-- 파티 유저 모두 가져오기 -->
+	<select id="getAllPartyUserList" parameterType="int" resultType="map">
+		SELECT u.user_no user_no, u.user_name user_name, u.user_id user_id, u.user_in user_in, pu.party_no party_no, pu.party_user_delyn party_user_delyn
+		FROM users u
+		INNER JOIN party_user pu ON u.user_no = pu.user_no
+		WHERE pu.party_no = #{party_no} AND (pu.party_user_delyn = 1 OR pu.party_user_delyn = 2)
+	</select>
+	
+	<select id="selectAllPartyReport" resultType="partyReportVO">
+		SELECT * from party_report
+	</select>
+	
+	<update id="updatePartyReport" parameterType="int">
+		update party_report set party_check_yn = 'Y' where party_report_no = #{param}
+	</update>
+	
+	<delete id="partyReportCompanion" parameterType="int">
+		delete from party_report where party_report_no = #{param}
+	</delete>
+	
+	
+</mapper>
