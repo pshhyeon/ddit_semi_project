@@ -38,8 +38,11 @@
 
 
 # [2] 사용 예
+<br>
 ![sagye_festival-ezgif com-video-to-gif-converter](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/82432795-a257-4841-b6e4-a675e101241b)
+<br>
 // 소모임 상세 gif 추가
+<br>
 ![sagye_board_gif](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/9dea453d-9d0d-4cba-8712-eb89d81ea4e2)
 
 
