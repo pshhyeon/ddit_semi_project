@@ -18,7 +18,7 @@
 
 <!-- 카카오 맵 -->
 <script
-	src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=dde7b3ab140fbaa2cba75ccfb885e2da"></script>
+	src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=[insert_your_key]"></script>
 <!-- 스크립트 -->
 <script src="/semi_project/js/script.js" defer></script>
 
