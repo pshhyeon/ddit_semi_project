@@ -52,10 +52,10 @@
 
 # [3] 팀원 소개
 - 박상현 - PL > <a href="https://github.com/pshhyeon">sanghyeon's github</a>
-- 김진원 - TA > 
-- 박정현 - AA > 
-- 장성훈 - DA > 
-- 이채민 - UA > 
+- 김진원 - TA > <a href="https://github.com/gottmi1">jinson's github</a>
+- 박정현 - AA > <a href="https://github.com/jhjhjhjjhjh">jeonghyeon's github</a>
+- 장성훈 - DA > <a href="https://github.com/sunghunjang1">sunghun's github</a>
+- 이채민 - UA > <a href="https://github.com/chaemnii">chaemin's github</a>
 
 
 # [4] 연락
