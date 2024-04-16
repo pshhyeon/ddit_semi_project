@@ -49,6 +49,9 @@
 
 ![sagye_board_gif](https://github.com/pshhyeon/ddit_semi_project/assets/130214802/9dea453d-9d0d-4cba-8712-eb89d81ea4e2)
 
+### index.jsp (necessary kakaoAPI key)
+### festival - detailFestival.jsp / festivalMain.jsp (necessary kakaoAPI key)
+### js - weather.js (necessary weatherAPI key)
 
 # [3] 팀원 소개
 - 박상현 - PL > <a href="https://github.com/pshhyeon">sanghyeon's github</a>
